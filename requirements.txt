@@ -1,0 +1,7 @@
+# conda install -c conda-forge libsndfile
+numpy
+numpyencoder
+pandas
+soundfile
+librosa
+flask
