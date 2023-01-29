@@ -16,6 +16,9 @@ import os
 import tempfile
 import shutil
 
+import easyocr
+reader = easyocr.Reader(['en']) # this needs to run only once to load the model into memory
+
 app = Flask(__name__)
 
 '''
@@ -306,6 +309,39 @@ def ddc():
     )
     # proxy the response content back to the client
     response = flask.Response(proxyRequest.content, status=proxyRequest.status_code)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "*"
+    response.headers["Access-Control-Expose-Headers"] = "*"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+    response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+    response.headers["Cross-Origin-Resource-Policy"] = "cross-origin"
+    return response
+
+@app.route("/ocr", methods=["POST", "OPTIONS"])
+def ocr():
+    if (flask.request.method == "OPTIONS"):
+        # print("got options 1")
+        response = flask.Response()
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "*"
+        response.headers["Access-Control-Expose-Headers"] = "*"
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+        response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+        response.headers["Cross-Origin-Resource-Policy"] = "cross-origin"
+        # print("got options 2")
+        return response
+
+    # get the body bytes
+    body = request.get_data()
+
+    result = reader.readtext(body)
+    print(f"got result: {result}")
+
+    # proxy the response content back to the client
+    response = flask.Response(result)
+    response.headers["Content-Type"] = "text/plain"
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Headers"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "*"
