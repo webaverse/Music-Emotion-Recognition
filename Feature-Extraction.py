@@ -336,11 +336,12 @@ def ocr():
     # get the body bytes
     body = request.get_data()
 
-    result = reader.readtext(body)
-    print(f"got result: {result}")
+    text = reader.readtext(body)
+    print(f"got result: {text}")
+    text_string = json.dumps(text, cls=NumpyEncoder)
 
     # proxy the response content back to the client
-    response = flask.Response(result)
+    response = flask.Response(text_string)
     response.headers["Content-Type"] = "text/plain"
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Headers"] = "*"
