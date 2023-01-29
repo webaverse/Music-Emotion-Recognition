@@ -6,3 +6,4 @@ soundfile
 librosa
 flask
 easyocr
+opencv-python==4.5.5.64
